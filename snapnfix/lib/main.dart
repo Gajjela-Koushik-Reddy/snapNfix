@@ -1,4 +1,3 @@
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:snapnfix/views/camera.dart';
 import 'package:snapnfix/views/list.dart';
@@ -34,18 +33,8 @@ class _MyHomePageState extends State<MyHomePage> {
   void _onItemTapped(int index) {
     setState(() {
       _selectedIndex = index;
-      if (kDebugMode) {
-        print("on tapped, set state function: $index");
-      }
-      pageController.animateToPage(_selectedIndex,
-          duration: const Duration(milliseconds: 500), curve: Curves.ease);
     });
   }
-
-  PageController pageController = PageController(
-    initialPage: 1,
-    keepPage: false,
-  );
 
   Widget buildBottomNavigation() {
     return BottomNavigationBar(
@@ -81,17 +70,12 @@ class _MyHomePageState extends State<MyHomePage> {
     );
   }
 
-  Widget buildPageView() {
-    return PageView(
-      controller: pageController,
-      children: const [
-        DamageLocationView(),
-        CameraView(),
-        DamageListView(),
-        UserProfileView()
-      ],
-    );
-  }
+  static const List<Widget> allViews = [
+    DamageLocationView(),
+    CameraView(),
+    DamageListView(),
+    UserProfileView()
+  ];
 
   @override
   Widget build(BuildContext context) {
@@ -99,7 +83,7 @@ class _MyHomePageState extends State<MyHomePage> {
       appBar: AppBar(
         title: const Center(child: Text("SnapNFix")),
       ),
-      body: buildPageView(),
+      body: allViews.elementAt(_selectedIndex),
       bottomNavigationBar: buildBottomNavigation(),
     );
   }
