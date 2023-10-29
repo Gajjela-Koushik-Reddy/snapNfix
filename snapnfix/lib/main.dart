@@ -33,11 +33,15 @@ class _MyHomePageState extends State<MyHomePage> {
   void _onItemTapped(int index) {
     setState(() {
       _selectedIndex = index;
+      pageController.jumpToPage(_selectedIndex);
     });
   }
 
-// Building the bottom navigation bar with all the
-// required icons
+  PageController pageController = PageController(
+    initialPage: 1,
+    keepPage: true,
+  );
+
   Widget buildBottomNavigation() {
     return BottomNavigationBar(
       items: const <BottomNavigationBarItem>[
@@ -72,12 +76,20 @@ class _MyHomePageState extends State<MyHomePage> {
     );
   }
 
-  static const List<Widget> allViews = [
-    DamageLocationView(),
-    CameraView(),
-    DamageListView(),
-    UserProfileView()
-  ];
+  Widget buildPageView() {
+    return PageView(
+      controller: pageController,
+      onPageChanged: (index) {
+        _onItemTapped(index);
+      },
+      children: const [
+        DamageLocationView(),
+        CameraView(),
+        DamageListView(),
+        UserProfileView()
+      ],
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -85,7 +97,7 @@ class _MyHomePageState extends State<MyHomePage> {
       appBar: AppBar(
         title: const Center(child: Text("SnapNFix")),
       ),
-      body: allViews.elementAt(_selectedIndex),
+      body: buildPageView(),
       bottomNavigationBar: buildBottomNavigation(),
     );
   }
