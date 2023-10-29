@@ -1,4 +1,9 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:snapnfix/views/camera.dart';
+import 'package:snapnfix/views/list.dart';
+import 'package:snapnfix/views/location.dart';
+import 'package:snapnfix/views/user.dart';
 
 void main() {
   runApp(const MyApp());
@@ -29,36 +34,73 @@ class _MyHomePageState extends State<MyHomePage> {
   void _onItemTapped(int index) {
     setState(() {
       _selectedIndex = index;
+      if (kDebugMode) {
+        print("on tapped, set state function: $index");
+      }
+      pageController.animateToPage(_selectedIndex,
+          duration: const Duration(milliseconds: 500), curve: Curves.ease);
     });
+  }
+
+  PageController pageController = PageController(
+    initialPage: 1,
+    keepPage: false,
+  );
+
+  Widget buildBottomNavigation() {
+    return BottomNavigationBar(
+      items: const <BottomNavigationBarItem>[
+        BottomNavigationBarItem(
+            icon: Icon(
+              Icons.location_pin,
+              color: Colors.black,
+            ),
+            label: "Location"),
+        BottomNavigationBarItem(
+            icon: Icon(
+              Icons.photo_camera_front_sharp,
+              color: Colors.black,
+            ),
+            label: "Camera"),
+        BottomNavigationBarItem(
+            icon: Icon(
+              Icons.list,
+              color: Colors.black,
+            ),
+            label: "Damages"),
+        BottomNavigationBarItem(
+            icon: Icon(
+              Icons.account_circle,
+              color: Colors.black,
+            ),
+            label: "Profile"),
+      ],
+      currentIndex: _selectedIndex,
+      selectedItemColor: Colors.black,
+      onTap: _onItemTapped,
+    );
+  }
+
+  Widget buildPageView() {
+    return PageView(
+      controller: pageController,
+      children: const [
+        DamageLocationView(),
+        CameraView(),
+        DamageListView(),
+        UserProfileView()
+      ],
+    );
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Center(child: Text("$_selectedIndex")),
-        actions: const [
-          Padding(
-            padding: EdgeInsets.only(right: 20.0),
-            child: Icon(Icons.account_circle, size: 40),
-          )
-        ],
+        title: const Center(child: Text("SnapNFix")),
       ),
-      body: Center(
-        child: Text("$_selectedIndex"),
-      ),
-      bottomNavigationBar: BottomNavigationBar(
-        items: const <BottomNavigationBarItem>[
-          BottomNavigationBarItem(
-              icon: Icon(Icons.location_pin), label: "Location"),
-          BottomNavigationBarItem(
-              icon: Icon(Icons.photo_camera_front_sharp), label: "Camera"),
-          BottomNavigationBarItem(icon: Icon(Icons.list), label: "Damages"),
-        ],
-        currentIndex: _selectedIndex,
-        selectedItemColor: Colors.black,
-        onTap: _onItemTapped,
-      ),
+      body: buildPageView(),
+      bottomNavigationBar: buildBottomNavigation(),
     );
   }
 }
