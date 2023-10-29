@@ -36,6 +36,8 @@ class _MyHomePageState extends State<MyHomePage> {
     });
   }
 
+// Building the bottom navigation bar with all the
+// required icons
   Widget buildBottomNavigation() {
     return BottomNavigationBar(
       items: const <BottomNavigationBarItem>[
