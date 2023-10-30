@@ -22,7 +22,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       home: MyHomePage(camera: camera,),
-      // debugShowCheckedModeBanner: false,
+      debugShowCheckedModeBanner: false,
     );
   }
 }
