@@ -4,8 +4,6 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 
-// import 'package:geolocator/geolocator.dart';
-
 class CameraView extends StatefulWidget {
   const CameraView({super.key, required this.camera});
 
@@ -155,10 +153,11 @@ class DisplayPictureScreen extends StatelessWidget {
         appBar: AppBar(title: const Text('Display the Picture')),
         // The image is stored as a file on the device. Use the `Image.file`
         // constructor with the given path to display the image.
-        // body: Image.file(File(imagePath)),
-        body: Stack(
-          alignment: Alignment.center,
-          children: [Image.file(File(imagePath)), Text("$position")],
+        body: Column(
+          children: [
+            Positioned(top: 20, bottom: 20, child: Image.file(File(imagePath))),
+            Positioned(top: 20, bottom: 100, child: Text("$position")),
+          ],
         ));
   }
 }
