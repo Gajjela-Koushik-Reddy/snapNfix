@@ -10,7 +10,7 @@ Future<void> main() async {
   final cameras = await availableCameras();
   final firstCamera = cameras.first;
 
-  runApp(MyApp(camera: firstCamera,));
+  runApp(MyApp(camera: firstCamera));
 }
 
 class MyApp extends StatelessWidget {
