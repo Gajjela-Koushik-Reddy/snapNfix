@@ -1,6 +1,6 @@
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
-import 'package:snapnfix/views/camera.dart';
+import 'package:snapnfix/views/DamageReporting/camera.dart';
 import 'package:snapnfix/views/list.dart';
 import 'package:snapnfix/views/location.dart';
 import 'package:snapnfix/views/user.dart';
