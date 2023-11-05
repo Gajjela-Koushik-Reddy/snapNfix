@@ -1,8 +1,8 @@
-import 'dart:io';
 import 'package:camera/camera.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:snapnfix/views/DamageReporting/next.dart';
 
 class CameraView extends StatefulWidget {
   const CameraView({super.key, required this.camera});
@@ -58,8 +58,7 @@ class _CameraViewState extends State<CameraView> {
   void initState() {
     super.initState();
 
-    _cameraController =
-        CameraController(widget.camera, ResolutionPreset.medium);
+    _cameraController = CameraController(widget.camera, ResolutionPreset.high);
     _initializeCameraControllerFuture = _cameraController.initialize();
   }
 
@@ -99,7 +98,7 @@ class _CameraViewState extends State<CameraView> {
                   try {
                     // Ensure that the camera is initialized.
                     await _initializeCameraControllerFuture;
-                    final Position position = await _determinePosition();
+                    // final Position position = await _determinePosition();
 
                     // Attempt to take a picture and get the file `image`
                     // where it was saved.
@@ -110,11 +109,11 @@ class _CameraViewState extends State<CameraView> {
                     // If the picture was taken, display it on a new screen.
                     await Navigator.of(context).push(
                       MaterialPageRoute(
-                        builder: (context) => DisplayPictureScreen(
+                        builder: (context) => NextView(
                           // Pass the automatically generated path to
                           // the DisplayPictureScreen widget.
                           imagePath: image.path,
-                          position: position,
+                          // position: position,
                         ),
                       ),
                     );
@@ -136,28 +135,5 @@ class _CameraViewState extends State<CameraView> {
         )
       ],
     );
-  }
-}
-
-// A widget that displays the picture taken by the user.
-class DisplayPictureScreen extends StatelessWidget {
-  final String imagePath;
-  final Position position;
-
-  const DisplayPictureScreen(
-      {super.key, required this.imagePath, required this.position});
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-        appBar: AppBar(title: const Text('Display the Picture')),
-        // The image is stored as a file on the device. Use the `Image.file`
-        // constructor with the given path to display the image.
-        body: Column(
-          children: [
-            Positioned(top: 20, bottom: 20, child: Image.file(File(imagePath))),
-            Positioned(top: 20, bottom: 100, child: Text("$position")),
-          ],
-        ));
   }
 }
