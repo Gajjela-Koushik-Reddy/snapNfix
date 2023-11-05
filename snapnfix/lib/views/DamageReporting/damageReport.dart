@@ -91,7 +91,6 @@ class _DamageReportViewState extends State<DamageReportView> {
   @override
   void initState() {
     super.initState();
-
     _titleController.addListener(_titleLength);
   }
 
@@ -107,71 +106,81 @@ class _DamageReportViewState extends State<DamageReportView> {
 
   @override
   Widget build(BuildContext context) {
-    return Form(
-        key: _formKey,
-        child: Column(
-          children: [
-            const SizedBox(
-              height: 5,
-            ),
-            SizedBox(
-              width: 380,
-              child: TextFormField(
-                controller: _titleController,
-                decoration: const InputDecoration(
-                  border: OutlineInputBorder(),
-                  labelText: 'Title',
-                ),
+    return SingleChildScrollView(
+      child: Form(
+          key: _formKey,
+          child: Column(
+            children: [
+              const SizedBox(
+                height: 10,
               ),
-            ),
-            const SizedBox(
-              height: 5,
-            ),
-            SizedBox(
+              SizedBox(
+                height: 250,
+                width: 380,
+                child: Image.network("https://picsum.photos/250?image=9"),
+              ),
+              const SizedBox(
+                height: 10,
+              ),
+              SizedBox(
                 width: 380,
                 child: TextFormField(
-                  controller: _locationController,
-                  decoration: const InputDecoration(
-                      border: OutlineInputBorder(),
-                      labelText: 'Location',
-                      hintText: 'Room No, Floor, Landmark., etc.'),
-                )),
-            const SizedBox(
-              height: 5,
-            ),
-            SizedBox(
-              width: 380,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const Text("Damage Rating"),
-                  buildDamageRating(),
-                ],
-              ),
-            ),
-            const SizedBox(
-              height: 5,
-            ),
-            SizedBox(
-              width: 380,
-              child: TextFormField(
-                  controller: _notesController,
+                  controller: _titleController,
                   decoration: const InputDecoration(
                     border: OutlineInputBorder(),
-                    labelText: 'Notes',
+                    labelText: 'Title',
+                  ),
+                ),
+              ),
+              const SizedBox(
+                height: 5,
+              ),
+              SizedBox(
+                  width: 380,
+                  child: TextFormField(
+                    controller: _locationController,
+                    decoration: const InputDecoration(
+                        border: OutlineInputBorder(),
+                        labelText: 'Location',
+                        hintText: 'Room No, Floor, Landmark., etc.'),
                   )),
-            ),
-            const SizedBox(
-              height: 5,
-            ),
-            ElevatedButton(
-                onPressed: () {
-                  if (kDebugMode) {
-                    print("This is the star rating $_rating");
-                  }
-                },
-                child: const Text("Submit"))
-          ],
-        ));
+              const SizedBox(
+                height: 5,
+              ),
+              SizedBox(
+                width: 380,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Text("Damage Rating"),
+                    buildDamageRating(),
+                  ],
+                ),
+              ),
+              const SizedBox(
+                height: 5,
+              ),
+              SizedBox(
+                width: 380,
+                child: TextFormField(
+                    controller: _notesController,
+                    decoration: const InputDecoration(
+                      border: OutlineInputBorder(),
+                      labelText: 'Notes',
+                    )),
+              ),
+              const SizedBox(
+                height: 5,
+              ),
+              ElevatedButton(
+                  onPressed: () {
+                    if (kDebugMode) {
+                      print("This is the star rating $_rating");
+                    }
+                  },
+                  child: const Text("Submit"))
+            ],
+          )),
+    );
   }
 }

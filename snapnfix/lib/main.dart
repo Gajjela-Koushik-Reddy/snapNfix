@@ -1,6 +1,7 @@
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
-import 'package:snapnfix/views/DamageReporting/camera.dart';
+// import 'package:snapnfix/views/DamageReporting/camera.dart';
+import 'package:snapnfix/views/DamageReporting/damageReport.dart';
 import 'package:snapnfix/views/list.dart';
 import 'package:snapnfix/views/location.dart';
 import 'package:snapnfix/views/user.dart';
@@ -21,7 +22,9 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      home: MyHomePage(camera: camera,),
+      home: MyHomePage(
+        camera: camera,
+      ),
       debugShowCheckedModeBanner: false,
     );
   }
@@ -89,11 +92,12 @@ class _MyHomePageState extends State<MyHomePage> {
       onPageChanged: (index) {
         _onItemTapped(index);
       },
-      children: [
-        const DamageLocationView(),
-        CameraView(camera: widget.camera,),
-        const DamageListView(),
-        const UserProfileView()
+      children: const [
+        DamageLocationView(),
+        // CameraView(camera: widget.camera,),
+        DamageReportView(),
+        DamageListView(),
+        UserProfileView()
       ],
     );
   }
