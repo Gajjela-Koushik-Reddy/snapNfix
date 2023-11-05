@@ -1,27 +1,39 @@
+import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
-import 'package:snapnfix/views/camera.dart';
+// import 'package:snapnfix/views/DamageReporting/camera.dart';
+import 'package:snapnfix/views/DamageReporting/damageReport.dart';
 import 'package:snapnfix/views/list.dart';
 import 'package:snapnfix/views/location.dart';
 import 'package:snapnfix/views/user.dart';
 
-void main() {
-  runApp(const MyApp());
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  final cameras = await availableCameras();
+  final firstCamera = cameras.first;
+
+  runApp(MyApp(camera: firstCamera));
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+  const MyApp({super.key, required this.camera});
+
+  final CameraDescription camera;
 
   @override
   Widget build(BuildContext context) {
-    return const MaterialApp(
-      home: MyHomePage(),
+    return MaterialApp(
+      home: MyHomePage(
+        camera: camera,
+      ),
       debugShowCheckedModeBanner: false,
     );
   }
 }
 
 class MyHomePage extends StatefulWidget {
-  const MyHomePage({super.key});
+  const MyHomePage({super.key, required this.camera});
+
+  final CameraDescription camera;
 
   @override
   State<MyHomePage> createState() => _MyHomePageState();
@@ -29,10 +41,14 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   int _selectedIndex = 1;
+  PageController pageController = PageController(
+    initialPage: 1,
+  );
 
   void _onItemTapped(int index) {
     setState(() {
       _selectedIndex = index;
+      pageController.jumpToPage(_selectedIndex);
     });
   }
 
@@ -70,12 +86,21 @@ class _MyHomePageState extends State<MyHomePage> {
     );
   }
 
-  static const List<Widget> allViews = [
-    DamageLocationView(),
-    CameraView(),
-    DamageListView(),
-    UserProfileView()
-  ];
+  Widget buildPageView() {
+    return PageView(
+      controller: pageController,
+      onPageChanged: (index) {
+        _onItemTapped(index);
+      },
+      children: const [
+        DamageLocationView(),
+        // CameraView(camera: widget.camera,),
+        DamageReportView(),
+        DamageListView(),
+        UserProfileView()
+      ],
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -83,7 +108,7 @@ class _MyHomePageState extends State<MyHomePage> {
       appBar: AppBar(
         title: const Center(child: Text("SnapNFix")),
       ),
-      body: allViews.elementAt(_selectedIndex),
+      body: buildPageView(),
       bottomNavigationBar: buildBottomNavigation(),
     );
   }
