@@ -58,8 +58,7 @@ class _CameraViewState extends State<CameraView> {
   void initState() {
     super.initState();
 
-    _cameraController =
-        CameraController(widget.camera, ResolutionPreset.medium);
+    _cameraController = CameraController(widget.camera, ResolutionPreset.high);
     _initializeCameraControllerFuture = _cameraController.initialize();
   }
 
