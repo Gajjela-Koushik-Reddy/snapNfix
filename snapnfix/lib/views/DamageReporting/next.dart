@@ -1,9 +1,6 @@
 import 'dart:io';
-
-// import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:snapnfix/views/DamageReporting/damageReport.dart';
-// import 'package:geolocator/geolocator.dart';
 
 class NextView extends StatefulWidget {
   const NextView({super.key, required this.imagePath});
@@ -27,7 +24,7 @@ class _NextViewState extends State<NextView> {
         onPressed: () {
 
           Navigator.of(context).push(MaterialPageRoute(
-              builder: (context) => const DamageReportView()));
+              builder: (context) => DamageReportView(imagePath: widget.imagePath,)));
 
         },
         child: const SizedBox(

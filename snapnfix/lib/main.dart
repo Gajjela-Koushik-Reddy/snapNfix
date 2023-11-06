@@ -1,7 +1,8 @@
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
+import 'package:snapnfix/views/DamageReporting/camera.dart';
 // import 'package:snapnfix/views/DamageReporting/camera.dart';
-import 'package:snapnfix/views/DamageReporting/damageReport.dart';
+// import 'package:snapnfix/views/DamageReporting/damageReport.dart';
 import 'package:snapnfix/views/list.dart';
 import 'package:snapnfix/views/location.dart';
 import 'package:snapnfix/views/user.dart';
@@ -92,12 +93,12 @@ class _MyHomePageState extends State<MyHomePage> {
       onPageChanged: (index) {
         _onItemTapped(index);
       },
-      children: const [
-        DamageLocationView(),
-        // CameraView(camera: widget.camera,),
-        DamageReportView(),
-        DamageListView(),
-        UserProfileView()
+      children: [
+        const DamageLocationView(),
+        CameraView(camera: widget.camera,),
+        // DamageReportView(),
+        const DamageListView(),
+        const UserProfileView()
       ],
     );
   }
