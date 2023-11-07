@@ -12,7 +12,6 @@ class NextView extends StatefulWidget {
 }
 
 class _NextViewState extends State<NextView> {
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -22,10 +21,11 @@ class _NextViewState extends State<NextView> {
       body: Image.file(File(widget.imagePath)),
       floatingActionButton: ElevatedButton(
         onPressed: () {
-
+          Navigator.pop(context);
           Navigator.of(context).push(MaterialPageRoute(
-              builder: (context) => DamageReportView(imagePath: widget.imagePath,)));
-
+              builder: (context) => DamageReportView(
+                    imagePath: widget.imagePath,
+                  )));
         },
         child: const SizedBox(
             width: 75,

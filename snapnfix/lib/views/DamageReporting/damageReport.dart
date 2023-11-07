@@ -1,13 +1,14 @@
 import 'dart:io';
-
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:snapnfix/views/DamageReporting/damage_report_storage.dart';
 
 class DamageReportView extends StatefulWidget {
-  const DamageReportView({super.key, required this.imagePath});
+  DamageReportView({super.key, required this.imagePath});
 
   final String imagePath;
+  final DamageReportStorage damageReportStorage = DamageReportStorage();
 
   @override
   State<DamageReportView> createState() => _DamageReportViewState();
@@ -18,8 +19,30 @@ class _DamageReportViewState extends State<DamageReportView> {
   final _titleController = TextEditingController();
   final _locationController = TextEditingController();
   final _notesController = TextEditingController();
-  late int _rating;
+  int _rating = 0;
   late Future<Position> _position;
+  late Position position;
+
+  Future<bool> _storeDamageReport() async {
+    // Get all the data here
+    /* Data
+      title, location, notes, rating
+    */
+
+    String title = _titleController.text;
+    String moreLocation = _locationController.text;
+    String notes = _notesController.text;
+    position = await _determinePosition();
+
+    if (kDebugMode) {
+      print("Location: $position");
+    }
+
+    bool result = await widget.damageReportStorage
+        .writeDamageReport("$_rating", position, notes, title, moreLocation);
+
+    return result;
+  }
 
   // Initializing Colors for Damage Rating
   var _myColorOne = Colors.grey;
@@ -150,7 +173,6 @@ class _DamageReportViewState extends State<DamageReportView> {
 
   @override
   Widget build(BuildContext context) {
-    // return SingleChildScrollView(
     return Scaffold(
         appBar: AppBar(
           title: const Text("Damage Report"),
@@ -162,10 +184,8 @@ class _DamageReportViewState extends State<DamageReportView> {
                 child: Column(
                   children: [
                     SizedBox(
-                      // height: 250,
                       height: MediaQuery.of(context).size.height * 0.42,
                       width: MediaQuery.of(context).size.width * 0.95,
-                      // child: Image.network("https://picsum.photos/250?image=9"),
                       child: Image.file(File(widget.imagePath)),
                     ),
                     const SizedBox(
@@ -177,38 +197,16 @@ class _DamageReportViewState extends State<DamageReportView> {
                           builder: (context, snapshot) {
                             List<Widget> children;
                             if (snapshot.hasData) {
-                            //   return Row(
-                            //     mainAxisAlignment: MainAxisAlignment.start,
-                            //     children: [
-                            //       const Icon(Icons.location_on),
-                            //       Text("${snapshot.data}")
-                            //     ],
-                            //   );
+                              // position = snapshot.data!;
                               children = <Widget>[
                                 Text(
                                     "(${snapshot.data?.latitude}, ${snapshot.data?.longitude})"),
                               ];
                             } else if (snapshot.hasError) {
-                              // return const Row(
-                              //   children: [
-                              //     Icon(Icons.location_on),
-                              //     Text("Location Unavailable"),
-                              //   ],
-                              // );
                               children = <Widget>[
                                 const Text("Location Unavailable"),
                               ];
                             } else {
-                              // return const SizedBox(
-                              //     width: 15,
-                              //     height: 15,
-                              //     child: Row(
-                              //       children: [
-                              //         Icon(Icons.location_on),
-                              //         CircularProgressIndicator(),
-                              //       ],
-                              //     ));
-
                               children = <Widget>[
                                 const SizedBox(
                                   width: 15,
@@ -231,6 +229,12 @@ class _DamageReportViewState extends State<DamageReportView> {
                       // width: 380,
                       width: MediaQuery.of(context).size.width * 0.95,
                       child: TextFormField(
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return "Please Enter Title";
+                          }
+                          return null;
+                        },
                         controller: _titleController,
                         decoration: const InputDecoration(
                           border: OutlineInputBorder(),
@@ -242,7 +246,6 @@ class _DamageReportViewState extends State<DamageReportView> {
                       height: 5,
                     ),
                     SizedBox(
-                        // width: 380,
                         width: MediaQuery.of(context).size.width * 0.95,
                         child: TextFormField(
                           controller: _locationController,
@@ -255,7 +258,6 @@ class _DamageReportViewState extends State<DamageReportView> {
                       height: 5,
                     ),
                     SizedBox(
-                      // width: 380,
                       width: MediaQuery.of(context).size.width * 0.95,
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
@@ -269,7 +271,6 @@ class _DamageReportViewState extends State<DamageReportView> {
                       height: 5,
                     ),
                     SizedBox(
-                      // width: 380,
                       width: MediaQuery.of(context).size.width * 0.95,
                       child: TextFormField(
                           controller: _notesController,
@@ -283,16 +284,62 @@ class _DamageReportViewState extends State<DamageReportView> {
                     ),
                     ElevatedButton(
                         onPressed: () {
-                          if (kDebugMode) {
-                            print("Location: $_position");
-                            print("Title: ${_titleController.text}");
-                            print("This is the star rating $_rating");
+                          String message = "";
+                          bool isUploading = false;
+                          if (_titleLength() == 0) {
+                            message = "Please Enter the title";
+                          } else if (_rating == 0) {
+                            message = "Please Select a Damage Rating";
+                          } else {
+                            setState(() {
+                              isUploading = true;
+                            });
+
+                            _storeDamageReport().then((value) {
+                              setState(() {
+                                isUploading = false;
+                              });
+
+                              if (kDebugMode) {
+                                print(
+                                    "This is the return value of _storeDamageReport $value");
+                              }
+                              if (value) {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  const SnackBar(
+                                      content: Text('Uploaded Data')),
+                                );
+                                Navigator.pop(context);
+                              } else {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  const SnackBar(
+                                      content: Text('Uploading failed')),
+                                );
+                              }
+                            });
+                          }
+
+                          if (!isUploading) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(content: Text(message)),
+                            );
+                          } else {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                content: Row(
+                                  children: [
+                                    CircularProgressIndicator(),
+                                    SizedBox(width: 16),
+                                    Text('Uploading Data...'),
+                                  ],
+                                ),
+                              ),
+                            );
                           }
                         },
                         child: const Text("Submit"))
                   ],
                 )),
-            // );,
           ),
         ));
   }
