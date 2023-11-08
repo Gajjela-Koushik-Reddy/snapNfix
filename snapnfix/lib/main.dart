@@ -95,9 +95,11 @@ class _MyHomePageState extends State<MyHomePage> {
       },
       children: [
         const DamageLocationView(),
-        CameraView(camera: widget.camera,),
+        CameraView(
+          camera: widget.camera,
+        ),
         // DamageReportView(),
-        const DamageListView(),
+        DamageListView(),
         const UserProfileView()
       ],
     );

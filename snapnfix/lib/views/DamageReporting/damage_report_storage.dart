@@ -50,6 +50,31 @@ class DamageReportStorage {
       if (kDebugMode) {
         print("Failed to set text: $e");
       }
+      return false;
+    }
+  }
+
+  Future<bool> readDamageReport() async {
+    try {
+      if (!isInitialized) {
+        await initializeDefault();
+      }
+      FirebaseFirestore firestore = FirebaseFirestore.instance;
+      firestore.collection("damages").get().then((value) {
+        if (kDebugMode) {
+          print("Successfully completed");
+        }
+        for (var docSnapshot in value.docs) {
+          if (kDebugMode) {
+            print('${docSnapshot.id} => ${docSnapshot.data()}');
+          }
+        }
+      });
+      return true;
+    } catch (e) {
+      if (kDebugMode) {
+        print("Failed to set text: $e");
+      }
       return false; // Return false in case of an error
     }
   }
