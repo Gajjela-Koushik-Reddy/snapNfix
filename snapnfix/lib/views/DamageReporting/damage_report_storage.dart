@@ -75,7 +75,7 @@ class DamageReportStorage {
       if (kDebugMode) {
         print("Failed to set text: $e");
       }
-      return false; // Return false in case of an error
+      return false; 
     }
   }
 }
