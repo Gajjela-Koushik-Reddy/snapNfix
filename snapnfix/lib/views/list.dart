@@ -1,9 +1,11 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:snapnfix/card_widgets/damage_report_card.dart';
+// import 'package:snapnfix/card_widgets/damage_report_card.dart';
 import 'package:snapnfix/views/DamageReporting/damage_report_storage.dart';
 
 class DamageListView extends StatefulWidget {
-  DamageListView({super.key});
+  DamageListView({Key? key}) : super(key: key);
   final DamageReportStorage damageReportStorage = DamageReportStorage();
 
   @override
@@ -11,16 +13,26 @@ class DamageListView extends StatefulWidget {
 }
 
 class _DamageListViewState extends State<DamageListView> {
-  bool onChanged = false;
+  late List<Map<String, dynamic>> damagesList = [];
+  List<Widget> children = [];
+  bool isLoaded = false;
 
-  List<Widget> buildList() {
-    List<Widget> ret = [];
+  _readDamages() async {
+    var data = await widget.damageReportStorage.readDamageReport();
 
-    for (int i = 0; i < 20; i++) {
-      ret.add(const DamageReportCard());
-    }
+    setState(() {
+      damagesList = data;
 
-    return ret;
+      for (var data in damagesList) {
+        children.add(DamageReportCard(title: data["data"]["Title"]));
+      }
+    });
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _readDamages();
   }
 
   @override
@@ -28,8 +40,7 @@ class _DamageListViewState extends State<DamageListView> {
     return Scaffold(
         body: SingleChildScrollView(
       child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: buildList(),
+        children: children,
       ),
     ));
   }

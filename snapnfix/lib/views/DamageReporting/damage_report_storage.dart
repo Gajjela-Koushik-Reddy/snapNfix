@@ -54,28 +54,43 @@ class DamageReportStorage {
     }
   }
 
-  Future<bool> readDamageReport() async {
+  Future<List<Map<String, dynamic>>> readDamageReport() async {
     try {
       if (!isInitialized) {
         await initializeDefault();
       }
+
       FirebaseFirestore firestore = FirebaseFirestore.instance;
-      firestore.collection("damages").get().then((value) {
+      List<Map<String, dynamic>> result = [];
+
+      QuerySnapshot value = await firestore.collection("damages").get();
+
+      if (kDebugMode) {
+        print("Successfully completed");
+      }
+      
+      for (var docSnapshot in value.docs) {
         if (kDebugMode) {
-          print("Successfully completed");
+          // print('${docSnapshot.id} => ${docSnapshot.data()}');
+          print(docSnapshot.id);
         }
-        for (var docSnapshot in value.docs) {
-          if (kDebugMode) {
-            print('${docSnapshot.id} => ${docSnapshot.data()}');
-          }
-        }
-      });
-      return true;
+
+        result.add({
+          "id": docSnapshot.id,
+          "data": docSnapshot.data(),
+        });
+      }
+
+      if (kDebugMode) {
+        print("before return ********* $result");
+      }
+
+      return result;
     } catch (e) {
       if (kDebugMode) {
         print("Failed to set text: $e");
       }
-      return false; 
+      return [];
     }
   }
 }

@@ -75,7 +75,6 @@ class _CameraViewState extends State<CameraView> {
                           // Pass the automatically generated path to
                           // the DisplayPictureScreen widget.
                           imagePath: image.path,
-                          // position: position,
                         ),
                       ),
                     );
