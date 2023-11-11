@@ -41,9 +41,9 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  int _selectedIndex = 1;
+  int _selectedIndex = 2;
   PageController pageController = PageController(
-    initialPage: 1,
+    initialPage: 2,
   );
 
   void _onItemTapped(int index) {
@@ -95,9 +95,11 @@ class _MyHomePageState extends State<MyHomePage> {
       },
       children: [
         const DamageLocationView(),
-        CameraView(camera: widget.camera,),
+        CameraView(
+          camera: widget.camera,
+        ),
         // DamageReportView(),
-        const DamageListView(),
+        DamageListView(),
         const UserProfileView()
       ],
     );
