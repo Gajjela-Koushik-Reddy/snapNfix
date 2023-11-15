@@ -26,7 +26,7 @@ class _DamageReportViewState extends State<DamageReportView> {
   Future<bool> _storeDamageReport() async {
     // Get all the data here
     /* Data
-      title, location, notes, rating
+      title, location, notes, rating, image_url\
     */
 
     String title = _titleController.text;
