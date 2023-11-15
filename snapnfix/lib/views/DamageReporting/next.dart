@@ -1,9 +1,6 @@
 import 'dart:io';
-
-// import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:snapnfix/views/DamageReporting/damageReport.dart';
-// import 'package:geolocator/geolocator.dart';
 
 class NextView extends StatefulWidget {
   const NextView({super.key, required this.imagePath});
@@ -15,7 +12,6 @@ class NextView extends StatefulWidget {
 }
 
 class _NextViewState extends State<NextView> {
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -25,10 +21,11 @@ class _NextViewState extends State<NextView> {
       body: Image.file(File(widget.imagePath)),
       floatingActionButton: ElevatedButton(
         onPressed: () {
-
+          Navigator.pop(context);
           Navigator.of(context).push(MaterialPageRoute(
-              builder: (context) => const DamageReportView()));
-
+              builder: (context) => DamageReportView(
+                    imagePath: widget.imagePath,
+                  )));
         },
         child: const SizedBox(
             width: 75,

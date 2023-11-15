@@ -1,7 +1,8 @@
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
+import 'package:snapnfix/views/DamageReporting/camera.dart';
 // import 'package:snapnfix/views/DamageReporting/camera.dart';
-import 'package:snapnfix/views/DamageReporting/damageReport.dart';
+// import 'package:snapnfix/views/DamageReporting/damageReport.dart';
 import 'package:snapnfix/views/list.dart';
 import 'package:snapnfix/views/location.dart';
 import 'package:snapnfix/views/user.dart';
@@ -40,9 +41,9 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  int _selectedIndex = 1;
+  int _selectedIndex = 2;
   PageController pageController = PageController(
-    initialPage: 1,
+    initialPage: 2,
   );
 
   void _onItemTapped(int index) {
@@ -92,12 +93,14 @@ class _MyHomePageState extends State<MyHomePage> {
       onPageChanged: (index) {
         _onItemTapped(index);
       },
-      children: const [
-        DamageLocationView(),
-        // CameraView(camera: widget.camera,),
-        DamageReportView(),
+      children: [
+        const DamageLocationView(),
+        CameraView(
+          camera: widget.camera,
+        ),
+        // DamageReportView(),
         DamageListView(),
-        UserProfileView()
+        const UserProfileView()
       ],
     );
   }

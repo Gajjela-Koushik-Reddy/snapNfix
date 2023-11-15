@@ -1,8 +1,14 @@
+import 'dart:io';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:geolocator/geolocator.dart';
+import 'package:snapnfix/views/DamageReporting/damage_report_storage.dart';
 
 class DamageReportView extends StatefulWidget {
-  const DamageReportView({super.key});
+  DamageReportView({super.key, required this.imagePath});
+
+  final String imagePath;
+  final DamageReportStorage damageReportStorage = DamageReportStorage();
 
   @override
   State<DamageReportView> createState() => _DamageReportViewState();
@@ -13,7 +19,30 @@ class _DamageReportViewState extends State<DamageReportView> {
   final _titleController = TextEditingController();
   final _locationController = TextEditingController();
   final _notesController = TextEditingController();
-  late int _rating;
+  int _rating = 0;
+  late Future<Position> _position;
+  late Position position;
+
+  Future<bool> _storeDamageReport() async {
+    // Get all the data here
+    /* Data
+      title, location, notes, rating
+    */
+
+    String title = _titleController.text;
+    String moreLocation = _locationController.text;
+    String notes = _notesController.text;
+    position = await _determinePosition();
+
+    if (kDebugMode) {
+      print("Location: $position");
+    }
+
+    bool result = await widget.damageReportStorage
+        .writeDamageReport("$_rating", position, notes, title, moreLocation);
+
+    return result;
+  }
 
   // Initializing Colors for Damage Rating
   var _myColorOne = Colors.grey;
@@ -88,10 +117,48 @@ class _DamageReportViewState extends State<DamageReportView> {
     );
   }
 
+  Future<Position> _determinePosition() async {
+    bool serviceEnabled;
+    LocationPermission permission;
+
+    // Test if location services are enabled.
+    serviceEnabled = await Geolocator.isLocationServiceEnabled();
+    if (!serviceEnabled) {
+      // Location services are not enabled don't continue
+      // accessing the position and request users of the
+      // App to enable the location services.
+      return Future.error('Location services are disabled.');
+    }
+
+    permission = await Geolocator.checkPermission();
+    if (permission == LocationPermission.denied) {
+      permission = await Geolocator.requestPermission();
+      if (permission == LocationPermission.denied) {
+        // Permissions are denied, next time you could try
+        // requesting permissions again (this is also where
+        // Android's shouldShowRequestPermissionRationale
+        // returned true. According to Android guidelines
+        // your App should show an explanatory UI now.
+        return Future.error('Location permissions are denied');
+      }
+    }
+
+    if (permission == LocationPermission.deniedForever) {
+      // Permissions are denied forever, handle appropriately.
+      return Future.error(
+          'Location permissions are permanently denied, we cannot request permissions.');
+    }
+
+    // When we reach here, permissions are granted and we can
+    // continue accessing the position of the device.
+    return await Geolocator.getCurrentPosition();
+  }
+
   @override
   void initState() {
     super.initState();
     _titleController.addListener(_titleLength);
+    _position = _determinePosition();
   }
 
   int _titleLength() {
@@ -106,81 +173,174 @@ class _DamageReportViewState extends State<DamageReportView> {
 
   @override
   Widget build(BuildContext context) {
-    return SingleChildScrollView(
-      child: Form(
-          key: _formKey,
-          child: Column(
-            children: [
-              const SizedBox(
-                height: 10,
-              ),
-              SizedBox(
-                height: 250,
-                width: 380,
-                child: Image.network("https://picsum.photos/250?image=9"),
-              ),
-              const SizedBox(
-                height: 10,
-              ),
-              SizedBox(
-                width: 380,
-                child: TextFormField(
-                  controller: _titleController,
-                  decoration: const InputDecoration(
-                    border: OutlineInputBorder(),
-                    labelText: 'Title',
-                  ),
-                ),
-              ),
-              const SizedBox(
-                height: 5,
-              ),
-              SizedBox(
-                  width: 380,
-                  child: TextFormField(
-                    controller: _locationController,
-                    decoration: const InputDecoration(
-                        border: OutlineInputBorder(),
-                        labelText: 'Location',
-                        hintText: 'Room No, Floor, Landmark., etc.'),
-                  )),
-              const SizedBox(
-                height: 5,
-              ),
-              SizedBox(
-                width: 380,
+    return Scaffold(
+        appBar: AppBar(
+          title: const Text("Damage Report"),
+        ),
+        body: Center(
+          child: SingleChildScrollView(
+            child: Form(
+                key: _formKey,
                 child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Text("Damage Rating"),
-                    buildDamageRating(),
+                    SizedBox(
+                      height: MediaQuery.of(context).size.height * 0.42,
+                      width: MediaQuery.of(context).size.width * 0.95,
+                      child: Image.file(File(widget.imagePath)),
+                    ),
+                    const SizedBox(
+                      height: 10,
+                    ),
+                    SizedBox(
+                      child: FutureBuilder(
+                          future: _position,
+                          builder: (context, snapshot) {
+                            List<Widget> children;
+                            if (snapshot.hasData) {
+                              // position = snapshot.data!;
+                              children = <Widget>[
+                                Text(
+                                    "(${snapshot.data?.latitude}, ${snapshot.data?.longitude})"),
+                              ];
+                            } else if (snapshot.hasError) {
+                              children = <Widget>[
+                                const Text("Location Unavailable"),
+                              ];
+                            } else {
+                              children = <Widget>[
+                                const SizedBox(
+                                  width: 15,
+                                  height: 15,
+                                  child: CircularProgressIndicator(),
+                                ),
+                              ];
+                            }
+                            // Adding Location icon to the front of the Icon list
+                            children.insert(0, const Icon(Icons.location_on));
+                            return Row(
+                              children: children,
+                            );
+                          }),
+                    ),
+                    const SizedBox(
+                      height: 10,
+                    ),
+                    SizedBox(
+                      // width: 380,
+                      width: MediaQuery.of(context).size.width * 0.95,
+                      child: TextFormField(
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return "Please Enter Title";
+                          }
+                          return null;
+                        },
+                        controller: _titleController,
+                        decoration: const InputDecoration(
+                          border: OutlineInputBorder(),
+                          labelText: 'Title',
+                        ),
+                      ),
+                    ),
+                    const SizedBox(
+                      height: 5,
+                    ),
+                    SizedBox(
+                        width: MediaQuery.of(context).size.width * 0.95,
+                        child: TextFormField(
+                          controller: _locationController,
+                          decoration: const InputDecoration(
+                              border: OutlineInputBorder(),
+                              labelText: 'Location',
+                              hintText: 'Room No, Floor, Landmark., etc.'),
+                        )),
+                    const SizedBox(
+                      height: 5,
+                    ),
+                    SizedBox(
+                      width: MediaQuery.of(context).size.width * 0.95,
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const Text("Damage Rating"),
+                          buildDamageRating(),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(
+                      height: 5,
+                    ),
+                    SizedBox(
+                      width: MediaQuery.of(context).size.width * 0.95,
+                      child: TextFormField(
+                          controller: _notesController,
+                          decoration: const InputDecoration(
+                            border: OutlineInputBorder(),
+                            labelText: 'Notes',
+                          )),
+                    ),
+                    const SizedBox(
+                      height: 5,
+                    ),
+                    ElevatedButton(
+                        onPressed: () {
+                          String message = "";
+                          bool isUploading = false;
+                          if (_titleLength() == 0) {
+                            message = "Please Enter the title";
+                          } else if (_rating == 0) {
+                            message = "Please Select a Damage Rating";
+                          } else {
+                            setState(() {
+                              isUploading = true;
+                            });
+
+                            _storeDamageReport().then((value) {
+                              setState(() {
+                                isUploading = false;
+                              });
+
+                              if (kDebugMode) {
+                                print(
+                                    "This is the return value of _storeDamageReport $value");
+                              }
+                              if (value) {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  const SnackBar(
+                                      content: Text('Uploaded Data')),
+                                );
+                                Navigator.pop(context);
+                              } else {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  const SnackBar(
+                                      content: Text('Uploading failed')),
+                                );
+                              }
+                            });
+                          }
+
+                          if (!isUploading) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(content: Text(message)),
+                            );
+                          } else {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                content: Row(
+                                  children: [
+                                    CircularProgressIndicator(),
+                                    SizedBox(width: 16),
+                                    Text('Uploading Data...'),
+                                  ],
+                                ),
+                              ),
+                            );
+                          }
+                        },
+                        child: const Text("Submit"))
                   ],
-                ),
-              ),
-              const SizedBox(
-                height: 5,
-              ),
-              SizedBox(
-                width: 380,
-                child: TextFormField(
-                    controller: _notesController,
-                    decoration: const InputDecoration(
-                      border: OutlineInputBorder(),
-                      labelText: 'Notes',
-                    )),
-              ),
-              const SizedBox(
-                height: 5,
-              ),
-              ElevatedButton(
-                  onPressed: () {
-                    if (kDebugMode) {
-                      print("This is the star rating $_rating");
-                    }
-                  },
-                  child: const Text("Submit"))
-            ],
-          )),
-    );
+                )),
+          ),
+        ));
   }
 }
