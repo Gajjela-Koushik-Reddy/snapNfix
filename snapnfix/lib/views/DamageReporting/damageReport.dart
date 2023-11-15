@@ -1,8 +1,10 @@
 import 'dart:io';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:snapnfix/views/DamageReporting/damage_report_storage.dart';
+import 'package:uuid/uuid.dart';
 
 class DamageReportView extends StatefulWidget {
   DamageReportView({super.key, required this.imagePath});
@@ -23,10 +25,28 @@ class _DamageReportViewState extends State<DamageReportView> {
   late Future<Position> _position;
   late Position position;
 
+Future<String> _uploadImage(String filename) async {
+    // Upload the image to Firebase Storage.
+    Reference ref = FirebaseStorage.instance.ref().child('$filename.jpg');
+    File imageFile = File(widget.imagePath);
+    final SettableMetadata metadata = SettableMetadata(
+      contentType: 'image/jpeg',
+      customMetadata: <String, String>{'file': 'image'},
+      contentLanguage: 'en',
+    );
+    UploadTask uploadTask = ref.putFile(imageFile, metadata);
+    TaskSnapshot taskSnapshot = await uploadTask;
+    String downloadURL = await taskSnapshot.ref.getDownloadURL();
+    if (kDebugMode) {
+      print(downloadURL);
+    }
+    return downloadURL;
+  }
+
   Future<bool> _storeDamageReport() async {
     // Get all the data here
     /* Data
-      title, location, notes, rating
+      title, location, notes, rating, image_url
     */
 
     String title = _titleController.text;
@@ -34,12 +54,13 @@ class _DamageReportViewState extends State<DamageReportView> {
     String notes = _notesController.text;
     position = await _determinePosition();
 
-    if (kDebugMode) {
-      print("Location: $position");
-    }
+    // Upload Image
+    var uuid = const Uuid();
+    String uuidString = uuid.v4();
+    String downloadURL = await _uploadImage(uuidString);
 
-    bool result = await widget.damageReportStorage
-        .writeDamageReport("$_rating", position, notes, title, moreLocation);
+    bool result = await widget.damageReportStorage.writeDamageReport(
+        "$_rating", position, notes, title, moreLocation, downloadURL);
 
     return result;
   }
