@@ -1,4 +1,3 @@
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:snapnfix/card_widgets/damage_report_card.dart';
 // import 'package:snapnfix/card_widgets/damage_report_card.dart';
@@ -24,7 +23,7 @@ class _DamageListViewState extends State<DamageListView> {
       damagesList = data;
 
       for (var data in damagesList) {
-        children.add(DamageReportCard(title: data["data"]["Title"]));
+        children.add(DamageReportCard(title: data["data"]["Title"], imageUrl: data["data"]["image"] ?? "",));
       }
     });
   }
