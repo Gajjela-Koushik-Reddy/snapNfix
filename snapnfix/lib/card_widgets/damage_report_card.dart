@@ -27,7 +27,7 @@ class _DamageReportCardState extends State<DamageReportCard> {
           leading: CircleAvatar(
             radius: 25,
             backgroundColor: Colors.transparent,
-            backgroundImage: NetworkImage(widget.imageUrl),
+            backgroundImage: widget.imageUrl.isNotEmpty ? NetworkImage(widget.imageUrl) : null,
             child: ClipOval(
               child: Container(
                 decoration: BoxDecoration(
