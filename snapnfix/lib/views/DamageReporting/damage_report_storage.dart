@@ -22,7 +22,7 @@ class DamageReportStorage {
   bool get isInitialized => _initialized;
 
   Future<bool> writeDamageReport(String damageRating, Position position,
-      String notes, String title, String moreLocation) async {
+      String notes, String title, String moreLocation, String imageFile) async {
     try {
       if (!isInitialized) {
         await initializeDefault();
@@ -37,6 +37,7 @@ class DamageReportStorage {
         "Notes": notes,
         "Title": title,
         "moreLocation": moreLocation,
+        "image": imageFile,
       });
       if (kDebugMode) {
         print("Damage Report Value: $damageRating");
