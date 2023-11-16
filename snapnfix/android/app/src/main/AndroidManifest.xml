@@ -5,6 +5,10 @@
         android:label="snapnfix"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
+
+        <!-- Adding Google Maps api key -->
+        <meta-data android:name="com.google.android.geo.API_KEY"
+               android:value="AIzaSyDQlBpQFxsmDxeUf8rbRLry6lUdDqbRqaY"/>
         <activity
             android:name=".MainActivity"
             android:exported="true"
