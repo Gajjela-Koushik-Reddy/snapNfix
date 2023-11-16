@@ -93,8 +93,9 @@ class _MyHomePageState extends State<MyHomePage> {
       onPageChanged: (index) {
         _onItemTapped(index);
       },
+      physics: const NeverScrollableScrollPhysics(),
       children: [
-        const DamageLocationView(),
+        DamageLocationView(),
         CameraView(
           camera: widget.camera,
         ),
