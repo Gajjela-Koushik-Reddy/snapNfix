@@ -1,28 +1,106 @@
 import 'package:flutter/material.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:snapnfix/views/DamageReporting/damage_report_storage.dart';
 
 class DamageLocationView extends StatefulWidget {
-  const DamageLocationView({super.key});
+  DamageLocationView({super.key});
+
+  final DamageReportStorage damageReportStorage = DamageReportStorage();
 
   @override
   State<DamageLocationView> createState() => _DamageLocationViewState();
 }
 
 class _DamageLocationViewState extends State<DamageLocationView> {
+  final Map<String, Marker> _markers = {};
   late GoogleMapController mapController;
-    final LatLng _center = const LatLng(45.521563, -122.677433);
 
-  void _onMapCreated(GoogleMapController controller) {
+  Future<Position> _determinePosition() async {
+    bool serviceEnabled;
+    LocationPermission permission;
+
+    // Test if location services are enabled.
+    serviceEnabled = await Geolocator.isLocationServiceEnabled();
+    if (!serviceEnabled) {
+      // Location services are not enabled don't continue
+      // accessing the position and request users of the
+      // App to enable the location services.
+      return Future.error('Location services are disabled.');
+    }
+
+    permission = await Geolocator.checkPermission();
+    if (permission == LocationPermission.denied) {
+      permission = await Geolocator.requestPermission();
+      if (permission == LocationPermission.denied) {
+        // Permissions are denied, next time you could try
+        // requesting permissions again (this is also where
+        // Android's shouldShowRequestPermissionRationale
+        // returned true. According to Android guidelines
+        // your App should show an explanatory UI now.
+        return Future.error('Location permissions are denied');
+      }
+    }
+
+    if (permission == LocationPermission.deniedForever) {
+      // Permissions are denied forever, handle appropriately.
+      return Future.error(
+          'Location permissions are permanently denied, we cannot request permissions.');
+    }
+
+    // When we reach here, permissions are granted and we can
+    // continue accessing the position of the device.
+    return await Geolocator.getCurrentPosition();
+  }
+
+  Future<void> _onMapCreated(GoogleMapController controller) async {
+    final allDamages = await widget.damageReportStorage.readDamageReport();
     mapController = controller;
+
+    setState(() {
+      _markers.clear();
+      for (final damage in allDamages) {
+        final marker = Marker(
+          markerId: MarkerId(damage["data"]["Title"]),
+          position: LatLng(damage["data"]["Location"]["latitude"],
+              damage["data"]["Location"]["longitude"]),
+          infoWindow: InfoWindow(
+              title: damage["data"]["Title"], snippet: damage["data"]["Notes"]),
+        );
+
+        _markers[damage["data"]["Title"]] = marker;
+      }
+    });
   }
 
   @override
   Widget build(BuildContext context) {
-    return GoogleMap(
-          onMapCreated: _onMapCreated,
-          initialCameraPosition: CameraPosition(
-            target: _center,
-            zoom: 11.0,
-          ));
+    return FutureBuilder(
+        future: _determinePosition(),
+        builder: (context, snapshot) {
+          LatLng userPos;
+
+          if (snapshot.hasData) {
+            userPos = LatLng(snapshot.data!.latitude, snapshot.data!.longitude);
+          } else if (snapshot.hasError) {
+            return Text("${snapshot.error}");
+          } else {
+            return const Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                CircularProgressIndicator(),
+                Text("Loading Location"),
+              ],
+            );
+          }
+
+          return GoogleMap(
+            onMapCreated: _onMapCreated,
+            myLocationEnabled: true,
+            myLocationButtonEnabled: true,
+            initialCameraPosition: CameraPosition(target: userPos, zoom: 14),
+            markers: _markers.values.toSet(),
+          );
+        });
   }
 }

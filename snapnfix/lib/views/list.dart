@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:snapnfix/card_widgets/damage_report_card.dart';
-// import 'package:snapnfix/card_widgets/damage_report_card.dart';
 import 'package:snapnfix/views/DamageReporting/damage_report_storage.dart';
 
 class DamageListView extends StatefulWidget {
