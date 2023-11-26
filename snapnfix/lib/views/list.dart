@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:snapnfix/card_widgets/damage_report_card.dart';
 import 'package:snapnfix/views/DamageReporting/damage_report_storage.dart';
 
@@ -22,7 +23,15 @@ class _DamageListViewState extends State<DamageListView> {
       damagesList = data;
 
       for (var data in damagesList) {
-        children.add(DamageReportCard(title: data["data"]["Title"], imageUrl: data["data"]["image"] ?? "",));
+        children.add(DamageReportCard(
+          title: data["data"]["Title"],
+          imageUrl: data["data"]["image"] ?? "",
+          damageRating: "${data["data"]["DamageRating"]}",
+          damagePosition: LatLng(data["data"]["Location"]["latitude"],
+              data["data"]["Location"]["longitude"]),
+          notes: data["data"]["Notes"],
+          moreLocation: data["data"]["moreLocation"],
+        ));
       }
     });
   }

@@ -1,11 +1,23 @@
 import 'package:flutter/material.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:snapnfix/views/DamageReporting/damage_report_viewer.dart';
 
 class DamageReportCard extends StatefulWidget {
   const DamageReportCard(
-      {super.key, required this.title, required this.imageUrl});
+      {super.key,
+      required this.title,
+      required this.imageUrl,
+      required this.damageRating,
+      required this.damagePosition,
+      required this.notes,
+      required this.moreLocation});
 
+  final String damageRating;
+  final LatLng damagePosition;
+  final String notes;
   final String title;
   final String imageUrl;
+  final String moreLocation;
 
   @override
   State<DamageReportCard> createState() => _DamageReportCardState();
@@ -27,7 +39,9 @@ class _DamageReportCardState extends State<DamageReportCard> {
           leading: CircleAvatar(
             radius: 25,
             backgroundColor: Colors.transparent,
-            backgroundImage: widget.imageUrl.isNotEmpty ? NetworkImage(widget.imageUrl) : null,
+            backgroundImage: widget.imageUrl.isNotEmpty
+                ? NetworkImage(widget.imageUrl)
+                : null,
             child: ClipOval(
               child: Container(
                 decoration: BoxDecoration(
@@ -46,6 +60,17 @@ class _DamageReportCardState extends State<DamageReportCard> {
             },
             value: toggleButton,
           ),
+          onTap: () {
+            Navigator.of(context).push(MaterialPageRoute(
+                builder: (context) => DamageReportViewer(
+                      damageRating: widget.damageRating,
+                      notes: widget.notes,
+                      title: widget.title,
+                      imageURL: widget.imageUrl,
+                      moreLocation: widget.moreLocation,
+                      damagePosition: widget.damagePosition,
+                    )));
+          },
         ),
       ],
     );
