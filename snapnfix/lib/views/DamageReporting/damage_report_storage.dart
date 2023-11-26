@@ -72,7 +72,6 @@ class DamageReportStorage {
       
       for (var docSnapshot in value.docs) {
         if (kDebugMode) {
-          // print('${docSnapshot.id} => ${docSnapshot.data()}');
           print(docSnapshot.id);
         }
 
