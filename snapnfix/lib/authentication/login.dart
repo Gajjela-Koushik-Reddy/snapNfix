@@ -12,12 +12,16 @@ class _LoginViewState extends State<LoginView> {
   final _formKey = GlobalKey<FormState>();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
+
+  bool _isEmail(String email) {
+    RegExp emailRegex = RegExp(r'^[\w-]+(\.[\w-]+)*@[\w-]+(\.[\w-]+)+$');
+    return emailRegex.hasMatch(email);
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: Container(
-          width: double.infinity,
-          height: double.infinity,
           color: const Color.fromRGBO(1, 32, 46, 1),
           child: Center(
             child: SingleChildScrollView(
@@ -52,13 +56,6 @@ class _LoginViewState extends State<LoginView> {
                     padding: const EdgeInsets.all(10),
                     child: TextFormField(
                       controller: _emailController,
-                      validator: (value) {
-                        if (value!.length < 10) {
-                          return "Enter Valid Email Address";
-                        }
-
-                        return null;
-                      },
                       style: const TextStyle(color: Colors.black),
                       decoration: const InputDecoration(
                         filled: true,
@@ -79,7 +76,6 @@ class _LoginViewState extends State<LoginView> {
                           Icons.email_outlined,
                           color: Color.fromRGBO(1, 32, 46, 1),
                         ),
-                        errorStyle: TextStyle(fontSize: 14,)
                       ),
                     ),
                   ),
@@ -111,17 +107,55 @@ class _LoginViewState extends State<LoginView> {
                     ),
                   ),
 
-                  // Login button
+                  // Login_button
                   Container(
                       padding: const EdgeInsets.all(10),
                       width: double.infinity,
                       height: 75,
                       child: ElevatedButton(
                         onPressed: () {
-                          if (_formKey.currentState!.validate()) {
-                            if (kDebugMode) {
-                              print(_emailController.text);
-                              print(_passwordController.text);
+                          if (!_isEmail(_emailController.text)) {
+                            showDialog(
+                                context: context,
+                                builder: (BuildContext context) {
+                                  return AlertDialog(
+                                    title: const Text('Invalid Email'),
+                                    content: const Text(
+                                        'Please enter a valid email address.'),
+                                    actions: [
+                                      TextButton(
+                                        onPressed: () {
+                                          Navigator.pop(context);
+                                        },
+                                        child: const Text('OK'),
+                                      ),
+                                    ],
+                                  );
+                                });
+                          } else if (_passwordController.text == "") {
+                            showDialog(
+                                context: context,
+                                builder: (BuildContext context) {
+                                  return AlertDialog(
+                                    title: const Text('Invalid password'),
+                                    content: const Text(
+                                        'Please enter a valid password.'),
+                                    actions: [
+                                      TextButton(
+                                        onPressed: () {
+                                          Navigator.pop(context);
+                                        },
+                                        child: const Text('OK'),
+                                      ),
+                                    ],
+                                  );
+                                });
+                          } else {
+                            if (_isEmail(_emailController.text)) {
+                              if (kDebugMode) {
+                                print(_emailController.text);
+                                print(_passwordController.text);
+                              }
                             }
                           }
                         },

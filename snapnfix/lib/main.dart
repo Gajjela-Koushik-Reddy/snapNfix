@@ -1,8 +1,7 @@
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
+import 'package:snapnfix/authentication/login.dart';
 import 'package:snapnfix/views/DamageReporting/camera.dart';
-// import 'package:snapnfix/views/DamageReporting/camera.dart';
-// import 'package:snapnfix/views/DamageReporting/damageReport.dart';
 import 'package:snapnfix/views/list.dart';
 import 'package:snapnfix/views/location.dart';
 import 'package:snapnfix/views/user.dart';
@@ -41,6 +40,7 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
+  bool _showMainPage = false;
   int _selectedIndex = 0;
   PageController pageController = PageController(
     initialPage: 0,
@@ -50,6 +50,12 @@ class _MyHomePageState extends State<MyHomePage> {
     setState(() {
       _selectedIndex = index;
       pageController.jumpToPage(_selectedIndex);
+    });
+  }
+
+  void _setShowMainPage() {
+    setState(() {
+      _showMainPage = true;
     });
   }
 
@@ -108,12 +114,16 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Center(child: Text("SnapNFix")),
-      ),
-      body: buildPageView(),
-      bottomNavigationBar: buildBottomNavigation(),
-    );
+    if (_showMainPage) {
+      return Scaffold(
+        appBar: AppBar(
+          title: const Center(child: Text("SnapNFix")),
+        ),
+        body: buildPageView(),
+        bottomNavigationBar: buildBottomNavigation(),
+      );
+    } else {
+      return const LoginView();
+    }
   }
 }
