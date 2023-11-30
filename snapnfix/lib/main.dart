@@ -59,6 +59,12 @@ class _MyHomePageState extends State<MyHomePage> {
     });
   }
 
+  void _setShowLoginPage() {
+    setState(() {
+      _showMainPage = false;
+    });
+  }
+
   Widget buildBottomNavigation() {
     return BottomNavigationBar(
       items: const <BottomNavigationBarItem>[
@@ -107,7 +113,9 @@ class _MyHomePageState extends State<MyHomePage> {
         ),
         // DamageReportView(),
         DamageListView(),
-        const UserProfileView()
+        UserProfileView(
+          onLogoutSuccess: _setShowLoginPage,
+        )
       ],
     );
   }
@@ -123,7 +131,9 @@ class _MyHomePageState extends State<MyHomePage> {
         bottomNavigationBar: buildBottomNavigation(),
       );
     } else {
-      return const LoginView();
+      return LoginView(
+        onLoginSuccess: _setShowMainPage,
+      );
     }
   }
 }

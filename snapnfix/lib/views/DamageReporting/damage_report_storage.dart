@@ -28,7 +28,7 @@ class DamageReportStorage {
         await initializeDefault();
       }
       FirebaseFirestore firestore = FirebaseFirestore.instance;
-      final documentReference = await firestore.collection("damages").add({
+      await firestore.collection("damages").add({
         "DamageRating": damageRating,
         "Location": {
           "latitude": position.latitude,
@@ -39,13 +39,6 @@ class DamageReportStorage {
         "moreLocation": moreLocation,
         "image": imageFile,
       });
-      if (kDebugMode) {
-        print("Damage Report Value: $damageRating");
-        print("Location: $position");
-        print("Notes: $notes");
-        print("Title: $title");
-        print("Value: ${documentReference.id}");
-      }
       return true;
     } catch (e) {
       if (kDebugMode) {
@@ -69,7 +62,7 @@ class DamageReportStorage {
       if (kDebugMode) {
         print("Successfully completed");
       }
-      
+
       for (var docSnapshot in value.docs) {
         if (kDebugMode) {
           print(docSnapshot.id);
