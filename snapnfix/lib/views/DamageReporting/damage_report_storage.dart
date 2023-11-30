@@ -21,14 +21,14 @@ class DamageReportStorage {
 
   bool get isInitialized => _initialized;
 
-  Future<bool> writeDamageReport(String damageRating, Position position,
+  Future<bool> writeDamageReport(String userId, String damageRating, Position position,
       String notes, String title, String moreLocation, String imageFile) async {
     try {
       if (!isInitialized) {
         await initializeDefault();
       }
       FirebaseFirestore firestore = FirebaseFirestore.instance;
-      await firestore.collection("damages").add({
+      await firestore.collection(userId).add({
         "DamageRating": damageRating,
         "Location": {
           "latitude": position.latitude,

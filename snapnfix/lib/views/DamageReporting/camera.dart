@@ -1,12 +1,15 @@
 import 'package:camera/camera.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 import 'package:snapnfix/views/DamageReporting/next.dart';
 
 class CameraView extends StatefulWidget {
-  const CameraView({super.key, required this.camera});
+  const CameraView({super.key, required this.camera, required this.userCredential});
 
   final CameraDescription camera;
+  final GoogleSignInAccount userCredential;
+
 
   @override
   State<CameraView> createState() => _CameraViewState();
@@ -75,6 +78,7 @@ class _CameraViewState extends State<CameraView> {
                           // Pass the automatically generated path to
                           // the DisplayPictureScreen widget.
                           imagePath: image.path,
+                          userCredential: widget.userCredential,
                         ),
                       ),
                     );
