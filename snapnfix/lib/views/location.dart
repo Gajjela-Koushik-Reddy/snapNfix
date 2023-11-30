@@ -1,12 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 import 'package:snapnfix/views/DamageReporting/damage_report_storage.dart';
 
 class DamageLocationView extends StatefulWidget {
-  DamageLocationView({super.key});
+  DamageLocationView({super.key, required this.userCredential});
 
   final DamageReportStorage damageReportStorage = DamageReportStorage();
+  final GoogleSignInAccount userCredential;
 
   @override
   State<DamageLocationView> createState() => _DamageLocationViewState();
@@ -54,7 +56,8 @@ class _DamageLocationViewState extends State<DamageLocationView> {
   }
 
   Future<void> _onMapCreated(GoogleMapController controller) async {
-    final allDamages = await widget.damageReportStorage.readDamageReport();
+    final allDamages = await widget.damageReportStorage
+        .readDamageReport(widget.userCredential.id);
     mapController = controller;
 
     setState(() {

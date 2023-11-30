@@ -3,13 +3,16 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 import 'package:snapnfix/views/DamageReporting/damage_report_storage.dart';
 import 'package:uuid/uuid.dart';
 
 class DamageReportView extends StatefulWidget {
-  DamageReportView({super.key, required this.imagePath});
+  DamageReportView(
+      {super.key, required this.imagePath, required this.userCredential});
 
   final String imagePath;
+  final GoogleSignInAccount userCredential;
   final DamageReportStorage damageReportStorage = DamageReportStorage();
 
   @override
@@ -25,7 +28,7 @@ class _DamageReportViewState extends State<DamageReportView> {
   late Future<Position> _position;
   late Position position;
 
-Future<String> _uploadImage(String filename) async {
+  Future<String> _uploadImage(String filename) async {
     // Upload the image to Firebase Storage.
     Reference ref = FirebaseStorage.instance.ref().child('$filename.jpg');
     File imageFile = File(widget.imagePath);
@@ -60,7 +63,13 @@ Future<String> _uploadImage(String filename) async {
     String downloadURL = await _uploadImage(uuidString);
 
     bool result = await widget.damageReportStorage.writeDamageReport(
-        "$_rating", position, notes, title, moreLocation, downloadURL);
+        widget.userCredential.id,
+        "$_rating",
+        position,
+        notes,
+        title,
+        moreLocation,
+        downloadURL);
 
     return result;
   }
