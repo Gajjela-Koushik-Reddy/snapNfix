@@ -48,7 +48,7 @@ class DamageReportStorage {
     }
   }
 
-  Future<List<Map<String, dynamic>>> readDamageReport() async {
+  Future<List<Map<String, dynamic>>> readDamageReport(String userId) async {
     try {
       if (!isInitialized) {
         await initializeDefault();
@@ -57,7 +57,7 @@ class DamageReportStorage {
       FirebaseFirestore firestore = FirebaseFirestore.instance;
       List<Map<String, dynamic>> result = [];
 
-      QuerySnapshot value = await firestore.collection("damages").get();
+      QuerySnapshot value = await firestore.collection(userId).get();
 
       if (kDebugMode) {
         print("Successfully completed");

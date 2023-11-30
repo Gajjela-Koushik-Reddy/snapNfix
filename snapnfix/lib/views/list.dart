@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 import 'package:snapnfix/card_widgets/damage_report_card.dart';
 import 'package:snapnfix/views/DamageReporting/damage_report_storage.dart';
 
 class DamageListView extends StatefulWidget {
-  DamageListView({Key? key}) : super(key: key);
+  DamageListView({Key? key, required this.userCredential}) : super(key: key);
   final DamageReportStorage damageReportStorage = DamageReportStorage();
+  final GoogleSignInAccount userCredential;
 
   @override
   State<DamageListView> createState() => _DamageListViewState();
@@ -17,7 +19,8 @@ class _DamageListViewState extends State<DamageListView> {
   bool isLoaded = false;
 
   _readDamages() async {
-    var data = await widget.damageReportStorage.readDamageReport();
+    var data = await widget.damageReportStorage
+        .readDamageReport(widget.userCredential.id);
 
     setState(() {
       damagesList = data;
