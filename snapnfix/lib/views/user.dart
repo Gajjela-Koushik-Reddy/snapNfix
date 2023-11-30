@@ -2,8 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 
 class UserProfileView extends StatefulWidget {
-  const UserProfileView({super.key, required this.onLogoutSuccess});
+  const UserProfileView(
+      {super.key, required this.onLogoutSuccess, required this.userCredential});
   final VoidCallback onLogoutSuccess;
+  final GoogleSignInAccount userCredential;
 
   void handleLogout() {
     onLogoutSuccess();
@@ -22,11 +24,20 @@ class _UserProfileViewState extends State<UserProfileView> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: ElevatedButton(
-          onPressed: () {
-            _logOut();
-          },
-          child: const Text("Log Out")),
-    );
+        body: Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Text("${widget.userCredential.displayName}"),
+          Text(widget.userCredential.id),
+          Text("${widget.userCredential.photoUrl}"),
+          ElevatedButton(
+              onPressed: () {
+                _logOut();
+              },
+              child: const Text("Log Out")),
+        ],
+      ),
+    ));
   }
 }

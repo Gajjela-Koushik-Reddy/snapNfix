@@ -1,19 +1,21 @@
-import 'package:firebase_core/firebase_core.dart';
+// import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:google_sign_in/google_sign_in.dart';
-import 'package:snapnfix/firebase_options.dart';
+// import 'package:google_sign_in/google_sign_in.dart';
+// import 'package:snapnfix/firebase_options.dart';
 
-GoogleSignIn _googleSignIn = GoogleSignIn(
-  scopes: [
-    'email',
-  ],
-);
+// GoogleSignIn _googleSignIn = GoogleSignIn(
+//   scopes: [
+//     'email',
+//   ],
+// );
 
 class LoginView extends StatefulWidget {
-  const LoginView({super.key, required this.onLoginSuccess});
+  const LoginView(
+      {super.key, required this.onLoginSuccess, required this.signInFunction});
   final VoidCallback onLoginSuccess;
+  final Future<UserCredential> Function() signInFunction;
   void handleSuccessfulLogin() {
     onLoginSuccess();
   }
@@ -26,49 +28,10 @@ class _LoginViewState extends State<LoginView> {
   final _formKey = GlobalKey<FormState>();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
-  bool _initialized = false;
 
   bool _isEmail(String email) {
     RegExp emailRegex = RegExp(r'^[\w-]+(\.[\w-]+)*@[\w-]+(\.[\w-]+)+$');
     return emailRegex.hasMatch(email);
-  }
-
-  Future<void> initializeDefault() async {
-    FirebaseApp app = await Firebase.initializeApp(
-      options: DefaultFirebaseOptions.currentPlatform,
-    );
-    _initialized = true;
-    if (kDebugMode) {
-      print("Initialized default Firebase app $app");
-    }
-  }
-
-  Future<UserCredential> signInWithGoogle() async {
-    if (!_initialized) {
-      await initializeDefault();
-    }
-    // Trigger the authentication flow
-    final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
-
-    if (kDebugMode) {
-      print(googleUser!.displayName);
-    }
-
-    // after logging in change the view
-    widget.onLoginSuccess();
-
-    // Obtain the auth details from the request
-    final GoogleSignInAuthentication? googleAuth =
-        await googleUser?.authentication;
-
-    // Create a new credential
-    final credential = GoogleAuthProvider.credential(
-      accessToken: googleAuth?.accessToken,
-      idToken: googleAuth?.idToken,
-    );
-
-    // Once signed in, return the UserCredential
-    return await FirebaseAuth.instance.signInWithCredential(credential);
   }
 
   @override
@@ -306,7 +269,7 @@ class _LoginViewState extends State<LoginView> {
                   // Google Login
                   IconButton(
                       onPressed: () {
-                        signInWithGoogle();
+                        widget.signInFunction();
                       },
                       icon: Image.asset("assets/google-icon.png")),
                 ],
