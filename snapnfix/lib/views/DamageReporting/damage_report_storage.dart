@@ -21,8 +21,14 @@ class DamageReportStorage {
 
   bool get isInitialized => _initialized;
 
-  Future<bool> writeDamageReport(String userId, String damageRating, Position position,
-      String notes, String title, String moreLocation, String imageFile) async {
+  Future<bool> writeDamageReport(
+      String userId,
+      String damageRating,
+      Position position,
+      String notes,
+      String title,
+      String moreLocation,
+      String imageFile) async {
     try {
       if (!isInitialized) {
         await initializeDefault();

@@ -47,10 +47,10 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   bool _initialized = false;
   bool _showMainPage = false;
-  int _selectedIndex = 0;
+  int _selectedIndex = 1;
   GoogleSignInAccount? _googleUser;
   PageController pageController = PageController(
-    initialPage: 0,
+    initialPage: 1,
   );
 
   void _onItemTapped(int index) {
@@ -152,11 +152,12 @@ class _MyHomePageState extends State<MyHomePage> {
       },
       physics: const NeverScrollableScrollPhysics(),
       children: [
-        DamageLocationView(),
+        DamageLocationView(userCredential: _googleUser!),
         CameraView(
           camera: widget.camera,
+          userCredential: _googleUser!,
         ),
-        DamageListView(),
+        DamageListView(userCredential: _googleUser!),
         UserProfileView(
           onLogoutSuccess: _setShowLoginPage,
           userCredential: _googleUser!,
