@@ -5,11 +5,11 @@ import 'package:google_sign_in/google_sign_in.dart';
 import 'package:snapnfix/views/DamageReporting/next.dart';
 
 class CameraView extends StatefulWidget {
-  const CameraView({super.key, required this.camera, required this.userCredential});
+  const CameraView(
+      {super.key, required this.camera, required this.userCredential});
 
   final CameraDescription camera;
   final GoogleSignInAccount userCredential;
-
 
   @override
   State<CameraView> createState() => _CameraViewState();
@@ -60,6 +60,12 @@ class _CameraViewState extends State<CameraView> {
                 onPressed: () async {
                   // Take the Picture in a try / catch block. If anything goes wrong,
                   // catch the error.
+
+                  /* Chantgpt help was taken here to build the try and catch blocks
+                  as my code was throwing errors.
+                  
+                  prompt: <copy pasted the code I had written> check for errors and clear
+                  */
                   try {
                     // Ensure that the camera is initialized.
                     await _initializeCameraControllerFuture;

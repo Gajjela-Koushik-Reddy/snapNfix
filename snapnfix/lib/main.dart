@@ -144,6 +144,12 @@ class _MyHomePageState extends State<MyHomePage> {
     );
   }
 
+/* 
+The Idea of bottom navigation bar and buildPageView function along 
+with the initial navigation setup 
+idea was extracted from teh youtube video https://www.youtube.com/watch?v=tbxceHnF0z4
+*/
+
   Widget buildPageView() {
     return PageView(
       controller: pageController,

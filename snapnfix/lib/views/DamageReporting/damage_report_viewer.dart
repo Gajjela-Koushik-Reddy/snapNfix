@@ -32,6 +32,11 @@ class _DamageReportViewerState extends State<DamageReportViewer> {
 
   Widget buildDamageRating(int rating) {
     return Row(
+      /*
+      chatgpt help was taken to build children
+      prompt: gave the code from my DamageReportPage DamageRatingFunction
+              and prompted on how to make the widget uneditable.
+      */
       children: [
         Icon(Icons.star, color: rating >= 1 ? Colors.orange : Colors.grey),
         Icon(Icons.star, color: rating >= 2 ? Colors.orange : Colors.grey),
