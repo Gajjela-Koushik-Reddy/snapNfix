@@ -20,6 +20,7 @@ class _NextViewState extends State<NextView> {
       appBar: AppBar(title: const Text('Damage')),
       // The image is stored as a file on the device. Use the `Image.file`
       // constructor with the given path to display the image.
+      // Chatgpt was used to know the syntax for the body.
       body: Image.file(File(widget.imagePath)),
       floatingActionButton: ElevatedButton(
         onPressed: () {

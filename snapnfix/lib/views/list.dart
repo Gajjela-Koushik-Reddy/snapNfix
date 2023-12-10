@@ -22,6 +22,19 @@ class _DamageListViewState extends State<DamageListView> {
     var data = await widget.damageReportStorage
         .readDamageReport(widget.userCredential.id);
 
+    if (data.isEmpty) {
+      children.add(const Center(
+        child: Column(
+          children: [
+            Padding(
+              padding: EdgeInsets.all(10),
+              child: Text("No Items to Show, please add items"),
+            )
+          ],
+        ),
+      ));
+    }
+
     setState(() {
       damagesList = data;
 

@@ -74,6 +74,10 @@ class _DamageReportViewState extends State<DamageReportView> {
     return result;
   }
 
+/* 
+The star rating was heavily inspired form the 
+stackoverflow question @https://stackoverflow.com/questions/46637566/how-to-create-rating-star-bar-properly
+*/
   // Initializing Colors for Damage Rating
   var _myColorOne = Colors.grey;
   var _myColorTwo = Colors.grey;
