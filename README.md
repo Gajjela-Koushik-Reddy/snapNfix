@@ -1,3 +1,4 @@
+[Link to the project demo video](https://youtu.be/NOkvmgbLRTU?si=fQni3WEHLUFKEG9N)
 # snapNfix
 snapNfix is an Android app is tailored to streamline the process of tracking and managing structural defects across diverse settings, including apartments, construction sites, extensive farms, and industrial areas.
 
